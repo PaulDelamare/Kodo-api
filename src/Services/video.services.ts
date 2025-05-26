@@ -18,7 +18,8 @@ const createVideoService = async (
           data: {
                title: video.title,
                categorie: video.categorie,
-               videoUrl: videoPath,
+               videoUrl: videoPath.videoPath,
+               thumbnailUrl: videoPath.thumbnailPath,
                user: {
                     connect: { id: userId }
                }
@@ -26,6 +27,21 @@ const createVideoService = async (
      });
 }
 
+
+const findAllUserVideosService = async (userId: User['id']) => {
+     return bdd.video.findMany({
+          where: { user_id: userId }
+     });
+}
+
+const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
+     return bdd.video.findUnique({
+          where: { id: validatedData.id }
+     });
+}
+
 export const VideoServices = {
-     createVideoService
+     createVideoService,
+     findAllUserVideosService,
+     findVideoByIdService
 }
