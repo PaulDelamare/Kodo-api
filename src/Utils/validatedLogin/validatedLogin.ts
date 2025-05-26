@@ -25,7 +25,7 @@ export const checkAuth = () => {
             if (!user) {
 
                 /* #swagger.responses[401] = { schema: { $ref: '#/definitions/401' } } */
-                return handleError({ status: 401, error: "Erreur interne du serveur" }, req, res, 'CheckAuthAndRole');
+                return handleError({ status: 401, error: "Non autorisé" }, req, res, 'CheckAuthAndRole');
             }
 
 
