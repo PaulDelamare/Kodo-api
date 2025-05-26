@@ -28,7 +28,7 @@ export const checkAuth = () => {
             }
 
 
-            // Stock in req.user user information
+            // Attach user information to req.user
             req.user = user;
 
             // If the user has the required role or no role is specified, continue to the next middleware
