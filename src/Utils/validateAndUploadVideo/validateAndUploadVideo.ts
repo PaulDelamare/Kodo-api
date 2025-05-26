@@ -9,13 +9,16 @@ const MAX_HEIGHT = 1080;
 type VideoStream = { width: number; height: number };
 
 /**
- * Validate and upload a video file to local storage.
+ * Validate, upload a video file, and generate its thumbnail.
  * @param {Buffer} fileBuffer - Le buffer de la vidéo téléchargée.
  * @param {string} destinationPath - Chemin de destination pour sauvegarde.
- * @returns {Promise<string>} - Chemin où la vidéo a été enregistrée.
+ * @returns {Promise<{videoPath: string, thumbnailPath: string}>} - Chemins de la vidéo et de la miniature.
  * @throws {Error} - Si la validation échoue.
  */
-export async function validateAndUploadVideo(fileBuffer: Buffer, destinationPath: string): Promise<string> {
+export async function validateAndUploadVideo(
+     fileBuffer: Buffer,
+     destinationPath: string
+): Promise<{ videoPath: string, thumbnailPath: string }> {
      // 1. Vérification du buffer
      if (!fileBuffer) {
           throw new Error('Aucun buffer fourni');
@@ -69,5 +72,34 @@ export async function validateAndUploadVideo(fileBuffer: Buffer, destinationPath
      await fs.mkdir(dir, { recursive: true });
      await fs.writeFile(destinationPath, fileBuffer);
 
-     return destinationPath;
+     // 6. Génération de la vignette
+     const thumbnailPath = destinationPath.replace(/\.[^/.]+$/, "") + "_thumb.jpg";
+
+     await generateThumbnail(destinationPath, thumbnailPath);
+
+     return {
+          videoPath: destinationPath,
+          thumbnailPath: thumbnailPath
+     };
+}
+
+/**
+ * Génère une vignette pour une vidéo donnée.
+ * @param {string} videoPath - Le chemin vers la vidéo.
+ * @param {string} outputPath - Le chemin où sauvegarder la vignette.
+ * @returns {Promise<void>}
+ */
+async function generateThumbnail(videoPath: string, outputPath: string): Promise<void> {
+     return new Promise((resolve, reject) => {
+          ffmpeg(videoPath)
+               .screenshots({
+                    count: 1,            // Génère 1 seule vignette
+                    folder: path.dirname(outputPath),
+                    filename: path.basename(outputPath),
+                    size: '480x?',       // Largeur fixe, hauteur proportionnelle
+                    timestamps: ['10%']  // Prend une image à 10% de la durée (évite l'image noire du début)
+               })
+               .on('end', () => resolve())
+               .on('error', (err) => reject(new Error(`Erreur lors de la génération de la vignette: ${err.message}`)));
+     });
 }
