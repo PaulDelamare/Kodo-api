@@ -54,7 +54,7 @@ const login: RequestHandler = async (req, res) => {
         const { data, accessToken } = await AuthServices.loginService(await validateData(schemaData, req.body));
 
 
-        sendSuccess(res, 200, "L'utilisateur a bien été crée", { user: data, accessToken });
+        sendSuccess(res, 200, "L'utilisateur s'est connecté avec succès", { user: data, accessToken });
 
     } catch (error) {
         handleError(error, req, res, 'AuthController.login');
