@@ -15,8 +15,8 @@ export const hashPassword = async (password: User['password']): Promise<User['pa
 /**
  * Verifies that a given password matches a given hash.
  *
- * @param password - The plain text password to be verified.
  * @param hash - The hash string to compare against.
+ * @param password - The plain text password to be verified.
  * @returns A promise that resolves to a boolean indicating whether the password matches the hash.
  */
 export const verifyPassword = async (hash: User['password'], password: User['password']): Promise<true> => {
