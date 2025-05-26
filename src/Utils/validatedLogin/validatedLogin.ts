@@ -5,9 +5,8 @@ import { User } from "@prisma/client";
 import { handleError } from "../../Utils/errorHandler/errorHandler";
 
 /**
- * Middleware function to check JWT authentication and user role.
+ * Middleware function to check JWT authentication.
  *
- * @param role - The roles required for access
  * @return Express middleware function
  */
 export const checkAuth = () => {
