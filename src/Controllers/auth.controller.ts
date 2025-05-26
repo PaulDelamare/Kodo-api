@@ -35,7 +35,7 @@ const register: RequestHandler = async (req, res) => {
         // Peut-être pour plus tard pour flex
         // await sendEmail(req.body.email, "posware.service@gmail.com", "Activation de votre compte", "createAccount/createAccount", { password: randomPassword, email: req.body.email, siteUrl: process.env.SITE_URL, firstname: req.body.firstname });
 
-        sendSuccess(res, 201, "L'utilisateur a bien été crée");
+        sendSuccess(res, 201, "L'utilisateur a bien été créé");
 
     } catch (error) {
 
