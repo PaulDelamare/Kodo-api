@@ -9,6 +9,9 @@ import createRateLimiter from '../src/Middlewares/rateLimiter/rateLimiter.middle
 import { sanitizeRequestData } from '../src/Middlewares/sanitizeData/sanitizeData.middleware';
 import passportConfig from './passport.config';
 import passport from 'passport';
+import { checkFileExists } from '../src/Utils/checkFileExist/checkFileExist';
+import path from "path";
+
 
 // ! FONCTION
 
@@ -35,7 +38,13 @@ const configureMiddleware = (app: express.Application) => {
     app.use(express.json());
 
     // Cors for the API
-    app.use(cors());
+    app.use(cors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Range', 'Origin', 'X-Requested-With', 'Accept'],
+        exposedHeaders: ['Content-Range', 'Content-Length', 'Accept-Ranges', 'Content-Type'],
+        credentials: true
+    }));
 
     // Middleware for the api security
     app.use(helmet());
@@ -73,6 +82,13 @@ const configureMiddleware = (app: express.Application) => {
 
         logger.info(` ${req.method} - ${req.url} - IP:  ${req.ip}`);
     });
+
+    app.use(
+        "/api/uploads/public",
+        checkFileExists,
+        // eslint-disable-next-line no-undef
+        express.static(path.join(__dirname, "..", "uploads/public")),
+    );
 };
 
 // ! EXPORT
