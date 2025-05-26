@@ -19,6 +19,6 @@ export const hashPassword = async (password: User['password']): Promise<User['pa
  * @param password - The plain text password to be verified.
  * @returns A promise that resolves to a boolean indicating whether the password matches the hash.
  */
-export const verifyPassword = async (hash: User['password'], password: User['password']): Promise<true> => {
+export const verifyPassword = async (hash: User['password'], password: User['password']): Promise<boolean> => {
     return await argon2.verify(hash, password) || throwError(400, 'Email ou mot de passe incorrect');
 }
