@@ -1,9 +1,10 @@
 model User {
     id        String   @id @unique @default(uuid())
     email     String   @unique
-    name      String   @unique
-    firstname String   @unique
+    name      String 
+    firstname String 
     password  String
+    videos   Video[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
