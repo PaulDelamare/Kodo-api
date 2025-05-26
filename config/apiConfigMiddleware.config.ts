@@ -7,6 +7,8 @@ import { requestLog, rotateLog } from '../src/Utils/logFunction/logFunction';
 import { logger } from '../src/Utils/logger/logger';
 import createRateLimiter from '../src/Middlewares/rateLimiter/rateLimiter.middleware';
 import { sanitizeRequestData } from '../src/Middlewares/sanitizeData/sanitizeData.middleware';
+import passportConfig from './passport.config';
+import passport from 'passport';
 
 // ! FONCTION
 
@@ -27,6 +29,8 @@ import { sanitizeRequestData } from '../src/Middlewares/sanitizeData/sanitizeDat
  */
 
 const configureMiddleware = (app: express.Application) => {
+    require('dotenv').config()
+
     // Use this middleware to parse the incoming request bodies
     app.use(express.json());
 
@@ -48,6 +52,9 @@ const configureMiddleware = (app: express.Application) => {
             }
         }
     ));
+
+    // Configure passport
+    passportConfig(passport);
 
     // Middleware the proxy 
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
