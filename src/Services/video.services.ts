@@ -215,10 +215,10 @@ const deleteVideoService = async (videoId: string, userId: string) => {
           select: { user_id: true }
      });
      if (!video) {
-          return throwError(404, 'Vidéo non trouvée');
+          throw throwError(404, 'Vidéo non trouvée');
      }
      if (video.user_id !== userId) {
-          return throwError(403, 'Vous n\'êtes pas autorisé à supprimer cette vidéo');
+          throw throwError(403, 'Vous n\'êtes pas autorisé à supprimer cette vidéo');
      }
      await bdd.video.delete({
           where: { id: videoId }
