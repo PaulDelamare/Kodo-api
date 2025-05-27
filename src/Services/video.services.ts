@@ -27,16 +27,34 @@ const createVideoService = async (
      });
 }
 
-
 const findAllUserVideosService = async (userId: User['id']) => {
      return bdd.video.findMany({
-          where: { user_id: userId }
+          where: { user_id: userId },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         email: true,
+                    }
+               }
+          }
      });
 }
 
 const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
      return bdd.video.findUnique({
-          where: { id: validatedData.id }
+          where: { id: validatedData.id },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         firstname: true,
+                         email: true
+                    }
+               }
+          }
      });
 }
 
