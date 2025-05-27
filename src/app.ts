@@ -6,6 +6,7 @@ import configureMiddleware from '../config/apiConfigMiddleware.config';
 import authRoutes from './Routes/auth.routes';
 import userRoutes from './Routes/user.routes';
 import videoRoutes from './Routes/video.routes';
+import commentRoutes from './Routes/comment.routes';
 
 
 // ! Middleware
@@ -20,6 +21,7 @@ configureMiddleware(app);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', videoRoutes);
+app.use('/api', commentRoutes);
 
 
 // ! EXPORT
