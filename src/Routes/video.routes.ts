@@ -15,5 +15,7 @@ router.get('/video/:id', checkApiKey(), checkAuth(), VideoController.findVideoBy
 
 router.get('/video-name', checkApiKey(), checkAuth(), VideoController.findVideoByName);
 
+router.delete('/video/:id', checkApiKey(), checkAuth(), VideoController.deleteVideo);
+
 
 export default router;
