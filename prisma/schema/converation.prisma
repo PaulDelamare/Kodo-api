@@ -1,0 +1,8 @@
+model Conversation {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+
+    // Relations
+    members  ConversationMember[]
+    messages Message[]
+}
