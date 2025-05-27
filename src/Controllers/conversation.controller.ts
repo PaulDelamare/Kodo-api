@@ -49,7 +49,6 @@ const findAllMessageByConversationId: RequestHandler = async (req, res) => {
 
     try {
 
-        console.log('jckdnfjkv')
 
         const messages = await ConversationServices.findAllMessageByConversationIdService(
             await validateData(
