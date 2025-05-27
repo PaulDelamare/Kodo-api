@@ -1,0 +1,11 @@
+model View {
+     user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+     userId   String
+     
+     video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+     videoId  String
+     viewedAt DateTime @default(now())
+
+     @@id([userId, videoId]) // empêche les doublons
+     @@index([videoId])
+}
