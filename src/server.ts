@@ -1,10 +1,14 @@
 // ! IMPORTS
 import { bdd } from '../config/prismaClient.config';
 import { app } from './app';
+import serverSocket from './socker.server';
 
 // ! CONFIG
 const PORT = process.env.PORT || 3000;
 const API_URL = process.env.API_URL;
+
+serverSocket;
+
 
 // ! INITIALISATION
 // Lance le serveur
