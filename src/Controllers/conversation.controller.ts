@@ -112,12 +112,27 @@ const checkConversationExists: RequestHandler = async (req, res) => {
     }
 }
 
+const defineAllActiveMessageView: RequestHandler = async (req, res) => {
+    const schemaData = vine.object({
+        conversationId: vine.string().uuid(),
+    });
+    const user = req.user!;
+    try {
+        const { conversationId } = await validateData(schemaData, req.params as Infer<typeof schemaData>);
 
+        const messages = await ConversationServices.defineAllActiveMessageViewService(conversationId, user.id);
+
+        sendSuccess(res, 200, 'Messages view status updated', messages);
+    } catch (error) {
+        handleError(error, req, res, 'ConversationController.defineAllActiveMessageView');
+    }
+}
 
 export const ConversationController = {
     findAllUserConversation,
     findConversationByUserId,
     findAllMessageByConversationId,
     sendMessage,
-    checkConversationExists
+    checkConversationExists,
+    defineAllActiveMessageView
 }
