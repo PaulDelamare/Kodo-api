@@ -89,7 +89,7 @@ const sendMessage: RequestHandler = async (req, res) => {
 
         sendSuccess(res, 201, 'Message envoyé');
     } catch (error) {
-        handleError(error, req, res, 'MessageController.sendMessage');
+        handleError(error, req, res, 'ConversationController.sendMessage');
     }
 };
 
