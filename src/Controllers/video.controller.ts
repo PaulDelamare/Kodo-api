@@ -3,7 +3,7 @@ import { handleError } from "../Utils/errorHandler/errorHandler";
 import { sendSuccess } from "../Utils/returnSuccess/returnSuccess";
 import { validateData } from "../Utils/validateData/validateData";
 import { VideoServices } from "../Services/video.services";
-import { User } from "@prisma/client";
+import { User, Video } from "@prisma/client";
 import { Request, RequestHandler, Response } from "express";
 import { Infer } from "@vinejs/vine/build/src/types";
 
@@ -67,7 +67,7 @@ const findAllVideos: RequestHandler = async (req, res) => {
      const schemaData = vine.object({
           page: vine.number().min(1).optional(),
           pageSize: vine.number().min(1).optional(),
-          categorie: vine.enum(['graphisme', '3d-art', 'ui-ux']).optional(),
+          categorie: vine.enum(['graphisme', '3d-art', 'ui-ux', 'follow']).optional(),
      });
 
      try {
@@ -76,13 +76,20 @@ const findAllVideos: RequestHandler = async (req, res) => {
                req.query as unknown as Infer<typeof schemaData>
           );
 
-          console.log('Page:', page, 'PageSize:', pageSize, 'Categorie:', categorie);
+          let videos: Video[] = [];
 
-          const videos = await VideoServices.findAllVideosService(
-               page,
-               pageSize,
-               categorie
-          );
+          if (categorie === 'follow') {
+               const user = req.user as User;
+               videos = await VideoServices.findFollowVideo(user.id, page, pageSize);
+
+          } else {
+               videos = await VideoServices.findAllVideosService(
+                    page,
+                    pageSize,
+                    categorie
+               );
+          }
+
 
           sendSuccess(res, 200, 'Liste des vidéos', videos);
      } catch (error) {
@@ -93,12 +100,15 @@ const findAllVideos: RequestHandler = async (req, res) => {
 const findVideoByName = async (req: Request, res: Response): Promise<void> => {
      const schemaData = vine.object({
           name: vine.string().minLength(1),
+          categorie: vine.enum(['graphisme', '3d-art', 'ui-ux', 'follow']).optional(),
      });
 
-     try {
-          const { name } = await validateData(schemaData, req.query as unknown as Infer<typeof schemaData>);
+     const user = req.user as User;
 
-          const video = await VideoServices.findVideoByNameService(name);
+     try {
+          const { name, categorie } = await validateData(schemaData, req.query as unknown as Infer<typeof schemaData>);
+
+          const video = await VideoServices.findVideoByNameService(name, categorie, user.id);
 
 
           sendSuccess(res, 200, "Vidéo trouvée", video);
