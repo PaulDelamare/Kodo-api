@@ -63,7 +63,7 @@ const findVideoById: RequestHandler = async (req, res) => {
      }
 };
 
-export const findAllVideos: RequestHandler = async (req, res) => {
+const findAllVideos: RequestHandler = async (req, res) => {
      const schemaData = vine.object({
           page: vine.number().min(1).optional(),
           pageSize: vine.number().min(1).optional(),
@@ -90,9 +90,28 @@ export const findAllVideos: RequestHandler = async (req, res) => {
      }
 };
 
+const findVideoByName = async (req: Request, res: Response): Promise<void> => {
+     const schemaData = vine.object({
+          name: vine.string().minLength(1),
+     });
+
+     try {
+          const { name } = await validateData(schemaData, req.query as unknown as Infer<typeof schemaData>);
+
+          const video = await VideoServices.findVideoByNameService(name);
+
+
+          sendSuccess(res, 200, "Vidéo trouvée", video);
+     } catch (error) {
+          handleError(error, req, res, 'VideoController.findVideoByName');
+     }
+}
+
+
 export const VideoController = {
      create,
      findAllUserVideos,
      findVideoById,
-     findAllVideos
+     findAllVideos,
+     findVideoByName
 }
