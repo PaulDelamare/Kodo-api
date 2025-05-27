@@ -117,11 +117,34 @@ const findVideoByName = async (req: Request, res: Response): Promise<void> => {
      }
 }
 
+const deleteVideo : RequestHandler = async (req, res) => {
+     const schemaData = vine.object({
+          id: vine.string().uuid(),
+     });
+
+     const user = req.user as User;
+
+     try {
+          const { id } = await validateData(schemaData, req.params as Infer<typeof schemaData>);
+
+          const video = await VideoServices.deleteVideoService(id, user.id);
+
+          if (!video) {
+               return handleError(new Error("Vidéo non trouvée"), req, res, 'VideoController.deleteVideo');
+          }
+
+          sendSuccess(res, 200, "Vidéo supprimée avec succès", video);
+     } catch (error) {
+          handleError(error, req, res, 'VideoController.deleteVideo');
+     }
+}
+
 
 export const VideoController = {
      create,
      findAllUserVideos,
      findVideoById,
      findAllVideos,
-     findVideoByName
+     findVideoByName,
+     deleteVideo
 }
