@@ -9,6 +9,8 @@ router.post('/video', checkApiKey(), checkAuth(), upload, VideoController.create
 
 router.get('/video', checkApiKey(), checkAuth(), VideoController.findAllUserVideos);
 
+router.get('/video-all', checkApiKey(), checkAuth(), VideoController.findAllVideos);
+
 router.get('/video/:id', checkApiKey(), checkAuth(), VideoController.findVideoById);
 
 export default router;
