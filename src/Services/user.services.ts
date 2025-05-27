@@ -87,7 +87,15 @@ const findUserById = async (userId: User['id']) => {
     const user = await bdd.user.findUnique({
         where: { id: userId },
         include: {
-            videos: true
+            videos: {
+                include: {
+                    _count: {
+                        select: {
+                            views: true,
+                        }
+                    }
+                }
+            }
         }
     });
 
