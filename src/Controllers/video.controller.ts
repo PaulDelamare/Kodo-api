@@ -18,7 +18,7 @@ const create = async (req: Request & { file: Express.Multer.File }, res: Respons
 
      const schemaData = vine.object({
           title: vine.string(),
-          categorie: vine.string(),
+          categorie: vine.enum(['graphisme', '3d-art', 'ui-ux']),
      })
 
      const user = req.user as User;
@@ -63,8 +63,36 @@ const findVideoById: RequestHandler = async (req, res) => {
      }
 };
 
+export const findAllVideos: RequestHandler = async (req, res) => {
+     const schemaData = vine.object({
+          page: vine.number().min(1).optional(),
+          pageSize: vine.number().min(1).optional(),
+          categorie: vine.enum(['graphisme', '3d-art', 'ui-ux']).optional(),
+     });
+
+     try {
+          const { page = 1, pageSize = 20, categorie } = await validateData(
+               schemaData,
+               req.query as unknown as Infer<typeof schemaData>
+          );
+
+          console.log('Page:', page, 'PageSize:', pageSize, 'Categorie:', categorie);
+
+          const videos = await VideoServices.findAllVideosService(
+               page,
+               pageSize,
+               categorie
+          );
+
+          sendSuccess(res, 200, 'Liste des vidéos', videos);
+     } catch (error) {
+          handleError(error, req, res, 'VideoController.findAllVideos');
+     }
+};
+
 export const VideoController = {
      create,
      findAllUserVideos,
-     findVideoById
+     findVideoById,
+     findAllVideos
 }

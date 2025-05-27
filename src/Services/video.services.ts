@@ -1,6 +1,7 @@
 import { User, Video } from "@prisma/client";
 import { bdd } from "../../config/prismaClient.config";
 import { validateAndUploadVideo } from "../Utils/validateAndUploadVideo/validateAndUploadVideo";
+import { throwError } from "../Utils/errorHandler/errorHandler";
 
 
 const createVideoService = async (
@@ -61,8 +62,46 @@ const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
      });
 }
 
+export const findAllVideosService = async (
+     page: number,
+     pageSize: number = 20,
+     categorie?: 'graphisme' | '3d-art' | 'ui-ux'
+) => {
+     const skip = (page - 1) * pageSize;
+
+     // Construire la clause where
+     const whereClause: any = {};
+     if (categorie) {
+          whereClause.categorie = categorie;
+     }
+
+     const videos = await bdd.video.findMany({
+          where: whereClause,
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         email: true,
+                         firstname: true
+                    }
+               }
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: pageSize
+     });
+
+     if (videos.length === 0) {
+          return throwError(404, 'Vidéos non trouvées');
+     }
+
+     return videos;
+};
+
 export const VideoServices = {
      createVideoService,
      findAllUserVideosService,
-     findVideoByIdService
+     findVideoByIdService,
+     findAllVideosService
 }
