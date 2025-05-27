@@ -62,7 +62,7 @@ const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
      });
 }
 
-export const findAllVideosService = async (
+const findAllVideosService = async (
      page: number,
      pageSize: number = 20,
      categorie?: 'graphisme' | '3d-art' | 'ui-ux'
@@ -99,9 +99,32 @@ export const findAllVideosService = async (
      return videos;
 };
 
+const findVideoByNameService = async (name: string) => {
+     return bdd.video.findMany({
+          where: {
+               title: {
+                    contains: name,
+                    mode: 'insensitive'
+               }
+          },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         email: true,
+                         firstname: true
+                    }
+               }
+          },
+          take: 5
+     });
+}
+
 export const VideoServices = {
      createVideoService,
      findAllUserVideosService,
      findVideoByIdService,
-     findAllVideosService
+     findAllVideosService,
+     findVideoByNameService
 }
