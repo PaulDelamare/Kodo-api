@@ -14,5 +14,7 @@ router.get('/check-conversation/:id', checkApiKey(), checkAuth(), ConversationCo
 
 router.post('/send-message/:id', checkApiKey(), checkAuth(), ConversationController.sendMessage);
 
+router.put('/conversation/:conversationId', checkApiKey(), checkAuth(), ConversationController.defineAllActiveMessageView);
+
 
 export default router;
