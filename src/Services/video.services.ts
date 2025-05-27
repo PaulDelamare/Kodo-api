@@ -92,7 +92,7 @@ export const findAllVideosService = async (
           take: pageSize
      });
 
-     if (!videos) {
+     if (videos.length === 0) {
           return throwError(404, 'Vidéos non trouvées');
      }
 
