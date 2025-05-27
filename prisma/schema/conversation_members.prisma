@@ -1,0 +1,9 @@
+model ConversationMember {
+    conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId String
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId         String
+
+    @@id([conversationId, userId])
+    @@index([userId])
+}

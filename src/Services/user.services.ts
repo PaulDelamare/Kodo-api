@@ -1,5 +1,5 @@
 // ! IMPORTS
-import { User } from "@prisma/client"
+import { Prisma, User } from "@prisma/client"
 import { bdd } from "../../config/prismaClient.config";
 import { throwError } from "../Utils/errorHandler/errorHandler";
 
@@ -19,6 +19,71 @@ const checkExistUser = async (validateData: Pick<User, 'id'> | Pick<User, 'email
     return user
 }
 
+/**
+ * Recherche les 5 utilisateurs les plus pertinents dont le prénom et/ou le nom correspondent au texte fourni.
+ *
+ * @param text - Le texte à rechercher (peut contenir prénom et/ou nom).
+ * @returns Les 5 utilisateurs les plus pertinents.
+ */
+const findUserByText = async (text: string) => {
+    const terms = text.trim().split(/\s+/);
+
+    let users = await bdd.user.findMany({
+        where: {
+            OR: [
+                {
+                    AND: [
+                        { firstname: { contains: terms[0], mode: Prisma.QueryMode.insensitive } },
+                        { name: { contains: terms[1] || '', mode: Prisma.QueryMode.insensitive } }
+                    ]
+                },
+                terms.length > 1
+                    ? {
+                        AND: [
+                            { firstname: { contains: terms[1], mode: Prisma.QueryMode.insensitive } },
+                            { name: { contains: terms[0], mode: Prisma.QueryMode.insensitive } }
+                        ]
+                    }
+                    : undefined
+            ].filter(Boolean) as any
+        },
+        take: 5,
+        select: {
+            id: true,
+            firstname: true,
+            name: true,
+            email: true,
+        }
+    });
+
+    if (users.length < 5) {
+        const orConditions = terms.flatMap(term => [
+            { firstname: { contains: term, mode: Prisma.QueryMode.insensitive } },
+            { name: { contains: term, mode: Prisma.QueryMode.insensitive } },
+            { email: { contains: term, mode: Prisma.QueryMode.insensitive } }
+        ]);
+
+        const extraUsers = await bdd.user.findMany({
+            where: {
+                OR: orConditions,
+                id: { notIn: users.map(u => u.id) }
+            },
+            take: 5 - users.length,
+            select: {
+                id: true,
+                firstname: true,
+                name: true,
+                email: true,
+            }
+        });
+
+        users = users.concat(extraUsers);
+    }
+
+    return users;
+};
+
 export const UserServices = {
     checkExistUser,
+    findUserByText
 }

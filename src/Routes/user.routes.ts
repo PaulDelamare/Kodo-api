@@ -6,4 +6,6 @@ import { checkAuth } from "../Utils/validatedLogin/validatedLogin";
 
 router.get('/user/get-info', checkApiKey(), checkAuth(), UserController.getInfo);
 
+router.get('/user', checkApiKey(), checkAuth(), UserController.findUserByText);
+
 export default router;
