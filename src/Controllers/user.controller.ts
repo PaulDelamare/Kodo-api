@@ -14,7 +14,6 @@ const getInfo: RequestHandler = async (req, res) => {
 }
 
 const findUserByText: RequestHandler = async (req, res) => {
-    console.log('herere')
     const schemaData = vine.object({
         text: vine.string().minLength(1).maxLength(50),
     });
@@ -34,7 +33,32 @@ const findUserByText: RequestHandler = async (req, res) => {
     }
 }
 
+const findUserById: RequestHandler = async (req, res) => {
+    const schemaData = vine.object({
+        id: vine.string().uuid(),
+    });
+
+    try {
+        const { id } = await validateData(
+            schemaData,
+            req.params as unknown as Infer<typeof schemaData>
+        );
+
+        const user = await UserServices.findUserById(id);
+
+        if (!user) {
+            return handleError(new Error("Utilisateur non trouvé"), req, res, 'UserController.findUserById');
+        }
+
+        sendSuccess(res, 200, "Utilisateur trouvé", user);
+
+    } catch (error) {
+        handleError(error, req, res, 'UserController.findUserById');
+    }
+}
+
 export const UserController = {
     getInfo,
-    findUserByText
+    findUserByText,
+    findUserById
 }

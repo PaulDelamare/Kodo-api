@@ -62,7 +62,7 @@ const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
      });
 }
 
-export const findAllVideosService = async (
+const findAllVideosService = async (
      page: number,
      pageSize: number = 20,
      categorie?: 'graphisme' | '3d-art' | 'ui-ux'
@@ -99,9 +99,96 @@ export const findAllVideosService = async (
      return videos;
 };
 
+const findVideoByNameService = async (name: string, categorie?: string, userId?: string) => {
+     if (categorie === "follow" && userId) {
+          return bdd.video.findMany({
+               where: {
+                    title: {
+                         contains: name,
+                         mode: 'insensitive'
+                    },
+                    user: {
+                         following: {
+                              some: { followerId: userId }
+                         }
+                    }
+               },
+               include: {
+                    user: {
+                         select: {
+                              id: true,
+                              name: true,
+                              email: true,
+                              firstname: true
+                         }
+                    }
+               },
+               take: 5
+          });
+     }
+
+     return bdd.video.findMany({
+          where: {
+               title: {
+                    contains: name,
+                    mode: 'insensitive'
+               },
+               ...(categorie && { categorie })
+          },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         email: true,
+                         firstname: true
+                    }
+               }
+          },
+          take: 5
+     });
+}
+
+const findFollowVideo = async (
+     userId: string,
+     page: number = 1,
+     pageSize: number = 20
+) => {
+     const skip = (page - 1) * pageSize;
+
+     const videos = await bdd.video.findMany({
+          where: {
+               user: {
+                    following: {
+                         some: { followerId: userId }
+                    }
+               }
+          },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         firstname: true,
+                         email: true
+                    }
+               }
+          },
+          orderBy: {
+               createdAt: 'desc'
+          },
+          skip,
+          take: pageSize
+     });
+
+     return videos;
+}
+
 export const VideoServices = {
      createVideoService,
      findAllUserVideosService,
      findVideoByIdService,
-     findAllVideosService
+     findAllVideosService,
+     findVideoByNameService,
+     findFollowVideo
 }
