@@ -209,11 +209,29 @@ const findFollowVideo = async (
      return videos;
 }
 
+const deleteVideoService = async (videoId: string, userId: string) => {
+     const video = await bdd.video.findUnique({
+          where: { id: videoId },
+          select: { user_id: true }
+     });
+     if (!video) {
+          return throwError(404, 'Vidéo non trouvée');
+     }
+     if (video.user_id !== userId) {
+          return throwError(403, 'Vous n\'êtes pas autorisé à supprimer cette vidéo');
+     }
+     await bdd.video.delete({
+          where: { id: videoId }
+     });
+     return { message: 'Vidéo supprimée avec succès' };
+}
+
 export const VideoServices = {
      createVideoService,
      findAllUserVideosService,
      findVideoByIdService,
      findAllVideosService,
      findVideoByNameService,
-     findFollowVideo
+     findFollowVideo,
+     deleteVideoService
 }
