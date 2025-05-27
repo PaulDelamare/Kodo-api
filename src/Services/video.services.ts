@@ -10,7 +10,10 @@ const createVideoService = async (
 ) => {
 
      const timestamp = Date.now();
-     const sanitizedTitle = video.title.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').trim();
+     let sanitizedTitle = video.title.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').trim();
+     if (!sanitizedTitle) {
+          sanitizedTitle = "untitled";
+     }
      const fileName = `${sanitizedTitle}_${timestamp}.mp4`;
      const videoPath = await validateAndUploadVideo(buffer, `uploads/public/videos/${fileName}`);
 
