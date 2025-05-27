@@ -28,7 +28,6 @@ const findAllUserConversationService = async (
             }
         },
         include: {
-            // On récupère tous les membres pour isoler l'autre user
             members: {
                 include: {
                     user: {
