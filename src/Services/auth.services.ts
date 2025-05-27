@@ -28,8 +28,6 @@ const registerService = async (validatedData: Pick<User, 'email' | 'password' | 
  *
  * @example
  * const result = await loginService({ email: "user@example.com", password: "password123" });
- * console.log(result.accessToken); // JWT token string
- * console.log(result.data); // User data without password
  */
 const loginService = async (validatedData: Pick<User, 'email' | 'password'> & { rememberMe?: true }) => {
 

@@ -1,0 +1,14 @@
+model Video {
+     id           String    @id @unique @default(uuid())
+     title        String
+     categorie    String
+     videoUrl     String    @unique
+     viewCount    Int       @default(0)
+     user_id      String
+     user         User      @relation(fields: [user_id], references: [id])
+     thumbnailUrl String
+     comments     Comment[]
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+}
