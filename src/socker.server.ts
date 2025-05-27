@@ -86,9 +86,4 @@ export function sendToRoom(id: string, message: string) {
     });
 }
 
-setTimeout(() => {
-    console.log('message envoyé')
-    sendToRoom('e6160e4d-9058-4375-978e-cff74f30e625', JSON.stringify({ message: 'salut' }));
-}, 10000);
-
 export default serverWs;
