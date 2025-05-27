@@ -1,10 +1,11 @@
 model User {
-    id        String   @id @unique @default(uuid())
-    email     String   @unique
-    name      String 
-    firstname String 
+    id        String    @id @unique @default(uuid())
+    email     String    @unique
+    name      String
+    firstname String
     password  String
-    videos   Video[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    videos    Video[]
+    comments  Comment[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
