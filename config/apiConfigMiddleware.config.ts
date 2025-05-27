@@ -69,7 +69,7 @@ const configureMiddleware = (app: express.Application) => {
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 
     // Defined the limit of the request
-    const limiter = createRateLimiter(15, 100);
+    const limiter = createRateLimiter(15, 1000);
     app.use(limiter);
 
     // Middleware for the sanitize data
