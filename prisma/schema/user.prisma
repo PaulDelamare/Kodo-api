@@ -13,4 +13,5 @@ model User {
 
     followers Follow[] @relation("UserFollows")
     following Follow[] @relation("UserFollowedBy")
+    savedVideos SavedVideo[]
 }
