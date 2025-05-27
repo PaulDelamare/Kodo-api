@@ -30,7 +30,7 @@ const findUserByText: RequestHandler = async (req, res) => {
         sendSuccess(res, 200, "Utilisateurs trouvés", users);
 
     } catch (error) {
-        handleError(error, req, res, 'VideoController.findAllVideos');
+        handleError(error, req, res, 'UserController.findUserByText');
     }
 }
 
