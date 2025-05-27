@@ -9,6 +9,8 @@ import videoRoutes from './Routes/video.routes';
 import commentRoutes from './Routes/comment.routes';
 import conversationRoutes from './Routes/conversation.routes';
 import followerRoutes from './Routes/follow.routes';
+import saveRoutes from './Routes/save.routes';
+import viewRoutes from './Routes/view.routes';
 
 
 // ! Middleware
@@ -26,6 +28,8 @@ app.use('/api', videoRoutes);
 app.use('/api', commentRoutes);
 app.use('/api', conversationRoutes);
 app.use('/api', followerRoutes);
+app.use('/api', saveRoutes);
+app.use('/api', viewRoutes);
 
 
 // ! EXPORT

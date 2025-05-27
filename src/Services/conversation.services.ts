@@ -49,7 +49,8 @@ const findAllUserConversationService = async (
                     content: true,
                     createdAt: true,
                     senderId: true,
-                    isView: true
+                    isView: true,
+                    viewDate: true
                 }
             }
         },
@@ -74,7 +75,8 @@ const findAllUserConversationService = async (
                     content: lastMsg.content,
                     createdAt: lastMsg.createdAt,
                     senderId: lastMsg.senderId,
-                    isView: lastMsg.isView
+                    isView: lastMsg.isView,
+                    viewDate: lastMsg.viewDate
                 }
                 : null
         };
@@ -257,10 +259,36 @@ const checkConversationExistsService = async (
     };
 };
 
+const defineAllActiveMessageViewService = async (conversationId: string, userId: string) => {
+    const isMember = await bdd.conversation.findFirst({
+        where: {
+            id: conversationId,
+            members: { some: { userId } }
+        },
+        select: { id: true }
+    });
+    if (!isMember) {
+        return throwError(403, 'Vous ne pouvez pas marquer les messages comme vus dans cette conversation');
+    }
+    await bdd.message.updateMany({
+        where: {
+            conversationId: conversationId,
+            senderId: { not: userId },
+            isView: false
+        },
+        data: {
+            isView: true,
+            viewDate: new Date()
+        }
+    });
+    return { message: 'Messages marqués comme vus' };
+}
+
 export const ConversationServices = {
     findAllUserConversationService,
     findConversationByUserIdService,
     findAllMessageByConversationIdService,
     sendMessageService,
-    checkConversationExistsService
+    checkConversationExistsService,
+    defineAllActiveMessageViewService
 }

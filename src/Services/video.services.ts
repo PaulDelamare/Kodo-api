@@ -41,6 +41,11 @@ const findAllUserVideosService = async (userId: User['id']) => {
                          name: true,
                          email: true,
                     }
+               },
+               _count: {
+                    select: {
+                         views: true,
+                    }
                }
           }
      });
@@ -56,6 +61,11 @@ const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
                          name: true,
                          firstname: true,
                          email: true
+                    }
+               },
+               _count: {
+                    select: {
+                         views: true,
                     }
                }
           }
@@ -84,6 +94,11 @@ const findAllVideosService = async (
                          name: true,
                          email: true,
                          firstname: true
+                    }
+               },
+               _count: {
+                    select: {
+                         views: true,
                     }
                }
           },
@@ -120,6 +135,11 @@ const findVideoByNameService = async (name: string, categorie?: string, userId?:
                               name: true,
                               email: true,
                               firstname: true
+                         }
+                    },
+                    _count: {
+                         select: {
+                              views: true,
                          }
                     }
                },
@@ -171,6 +191,11 @@ const findFollowVideo = async (
                          name: true,
                          firstname: true,
                          email: true
+                    }
+               },
+               _count: {
+                    select: {
+                         views: true,
                     }
                }
           },
