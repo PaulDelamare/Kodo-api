@@ -83,7 +83,28 @@ const findUserByText = async (text: string) => {
     return users;
 };
 
+const findUserById = async (userId: User['id']) => {
+    const user = await bdd.user.findUnique({
+        where: { id: userId },
+        include: {
+            videos: {
+                include: {
+                    _count: {
+                        select: {
+                            views: true,
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const { password, ...userWithoutPassword } = user || {};
+    return userWithoutPassword;
+}
+
 export const UserServices = {
     checkExistUser,
-    findUserByText
+    findUserByText,
+    findUserById
 }

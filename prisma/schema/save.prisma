@@ -1,0 +1,11 @@
+model SavedVideo {
+     user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+     userId  String
+     video   Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+     videoId String
+     savedAt DateTime @default(now())
+
+     @@id([userId, videoId])
+     @@index([userId, savedAt])
+     @@index([videoId, savedAt])
+}

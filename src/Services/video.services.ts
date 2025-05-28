@@ -41,6 +41,11 @@ const findAllUserVideosService = async (userId: User['id']) => {
                          name: true,
                          email: true,
                     }
+               },
+               _count: {
+                    select: {
+                         views: true,
+                    }
                }
           }
      });
@@ -57,12 +62,17 @@ const findVideoByIdService = async (validatedData: Pick<Video, 'id'>) => {
                          firstname: true,
                          email: true
                     }
+               },
+               _count: {
+                    select: {
+                         views: true,
+                    }
                }
           }
      });
 }
 
-export const findAllVideosService = async (
+const findAllVideosService = async (
      page: number,
      pageSize: number = 20,
      categorie?: 'graphisme' | '3d-art' | 'ui-ux'
@@ -85,6 +95,11 @@ export const findAllVideosService = async (
                          email: true,
                          firstname: true
                     }
+               },
+               _count: {
+                    select: {
+                         views: true,
+                    }
                }
           },
           orderBy: { createdAt: 'desc' },
@@ -99,9 +114,124 @@ export const findAllVideosService = async (
      return videos;
 };
 
+const findVideoByNameService = async (name: string, categorie?: string, userId?: string) => {
+     if (categorie === "follow" && userId) {
+          return bdd.video.findMany({
+               where: {
+                    title: {
+                         contains: name,
+                         mode: 'insensitive'
+                    },
+                    user: {
+                         following: {
+                              some: { followerId: userId }
+                         }
+                    }
+               },
+               include: {
+                    user: {
+                         select: {
+                              id: true,
+                              name: true,
+                              email: true,
+                              firstname: true
+                         }
+                    },
+                    _count: {
+                         select: {
+                              views: true,
+                         }
+                    }
+               },
+               take: 5
+          });
+     }
+
+     return bdd.video.findMany({
+          where: {
+               title: {
+                    contains: name,
+                    mode: 'insensitive'
+               },
+               ...(categorie && { categorie })
+          },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         email: true,
+                         firstname: true
+                    }
+               }
+          },
+          take: 5
+     });
+}
+
+const findFollowVideo = async (
+     userId: string,
+     page: number = 1,
+     pageSize: number = 20
+) => {
+     const skip = (page - 1) * pageSize;
+
+     const videos = await bdd.video.findMany({
+          where: {
+               user: {
+                    following: {
+                         some: { followerId: userId }
+                    }
+               }
+          },
+          include: {
+               user: {
+                    select: {
+                         id: true,
+                         name: true,
+                         firstname: true,
+                         email: true
+                    }
+               },
+               _count: {
+                    select: {
+                         views: true,
+                    }
+               }
+          },
+          orderBy: {
+               createdAt: 'desc'
+          },
+          skip,
+          take: pageSize
+     });
+
+     return videos;
+}
+
+const deleteVideoService = async (videoId: string, userId: string) => {
+     const video = await bdd.video.findUnique({
+          where: { id: videoId },
+          select: { user_id: true }
+     });
+     if (!video) {
+          throw throwError(404, 'Vidéo non trouvée');
+     }
+     if (video.user_id !== userId) {
+          throw throwError(403, 'Vous n\'êtes pas autorisé à supprimer cette vidéo');
+     }
+     await bdd.video.delete({
+          where: { id: videoId }
+     });
+     return { message: 'Vidéo supprimée avec succès' };
+}
+
 export const VideoServices = {
      createVideoService,
      findAllUserVideosService,
      findVideoByIdService,
-     findAllVideosService
+     findAllVideosService,
+     findVideoByNameService,
+     findFollowVideo,
+     deleteVideoService
 }
