@@ -4,6 +4,8 @@ import { sendSuccess } from "../Utils/returnSuccess/returnSuccess";
 import { handleError } from "../Utils/errorHandler/errorHandler";
 import { validateData } from "../Utils/validateData/validateData";
 import { AuthServices } from "../Services/auth.services";
+import { sendEmail } from "../Utils/sendEmail/sendEmail";
+import { Infer } from "@vinejs/vine/build/src/types";
 
 /**
  * Gère l'inscription d'un utilisateur.
@@ -61,7 +63,71 @@ const login: RequestHandler = async (req, res) => {
     }
 }
 
+const generatePasswordResetToken: RequestHandler = async (req, res) => {
+
+    const schemaData = vine.object({
+        email: vine.string().email()
+    })
+
+    try {
+
+        const { token, user } = await AuthServices.generatePasswordResetService(await validateData(schemaData, req.body));
+
+        await sendEmail(user.email, "kodo.contactpro@gmail.com", "Réinitialisation de mot de passe", "resetPassword/resetPassword", { token, firstname: user.firstname, user_id: user.id, siteUrl: process.env.SITE_URL });
+
+        sendSuccess(res, 200, "Un email a été envoyé");
+
+    } catch (error) {
+
+        // Handle the error
+        handleError(error, req, res, 'PasswordResetController.generatePasswordResetToken');
+    }
+}
+
+const checkUserRequest: RequestHandler = async (req, res) => {
+
+    const schemaData = vine.object({
+        userId: vine.string().uuid(),
+        token: vine.string()
+    })
+
+    try {
+
+        await AuthServices.checkUserRequest(await validateData(schemaData, req.query as Infer<typeof schemaData>));
+
+        sendSuccess(res, 200, "Utilisateur existant");
+
+    } catch (error) {
+
+        // Handle the error
+        handleError(error, req, res, 'PasswordResetController.checkUserRequest');
+    }
+}
+
+const changePassword: RequestHandler = async (req, res) => {
+    const schemaData = vine.object({
+        userId: vine.string().uuid(),
+        token: vine.string(),
+        password: vine.string().minLength(8).maxLength(30).confirmed(),
+    })
+
+    try {
+
+        await AuthServices.changePassword(await validateData(schemaData, req.body as Infer<typeof schemaData>));
+
+        sendSuccess(res, 200, "Mot de passe modifié");
+
+    } catch (error) {
+
+        // Handle the error
+        handleError(error, req, res, 'PasswordResetController.changePassword');
+    }
+}
+
 export const AuthController = {
     register,
-    login
+    login,
+    generatePasswordResetToken,
+    checkUserRequest,
+    changePassword
 }
