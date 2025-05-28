@@ -1,6 +1,9 @@
 # Utiliser l'image officielle Node.js comme image de base
 FROM node:20.14-alpine
 
+# Installer ffmpeg (inclut ffprobe)
+RUN apk add --no-cache ffmpeg
+
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
@@ -16,11 +19,14 @@ COPY . .
 # Installer les dépendances de développement pour TypeScript
 RUN npm install --only=development
 
+# Générer le client Prisma (optionnel ici ou au runtime)
+RUN npx prisma generate
+
 # Configurer l'environnement
 ENV NODE_ENV=production
 
 # Exposer le port sur lequel l'application s'exécute
 EXPOSE 3030
 
-# Commande pour lancer l'application avec TypeScript
-CMD ["sh", "-c", "npx prisma generate && npx tsx src/server.ts"]
+# Commande pour lancer l'application avec TSX
+CMD ["sh", "-c", "npx tsx src/server.ts"]
