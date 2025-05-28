@@ -22,6 +22,12 @@ import { Infer } from "@vinejs/vine/build/src/types";
  * Le mot de passe doit contenir entre 6 et 30 caractères et être confirmé.
  */
 const register: RequestHandler = async (req, res) => {
+
+    const user = req.user;
+
+    if (user) {
+        return handleError(new Error("Vous êtes déjà connecté"), req, res, 'AuthController.register');
+    }
     try {
 
         const schemaData = vine.object({
@@ -34,8 +40,7 @@ const register: RequestHandler = async (req, res) => {
 
         await AuthServices.registerService(await validateData(schemaData, req.body));
 
-        // Peut-être pour plus tard pour flex
-        // await sendEmail(req.body.email, "posware.service@gmail.com", "Activation de votre compte", "createAccount/createAccount", { password: randomPassword, email: req.body.email, siteUrl: process.env.SITE_URL, firstname: req.body.firstname });
+        await sendEmail(req.body.email, "kodo.contactpro@gmail.com", "Activation de votre compte", "createAccount/createAccount", { email: req.body.email, siteUrl: process.env.SITE_URL, firstname: req.body.firstname });
 
         sendSuccess(res, 201, "L'utilisateur a bien été créé");
 
@@ -46,6 +51,12 @@ const register: RequestHandler = async (req, res) => {
 }
 
 const login: RequestHandler = async (req, res) => {
+
+    const user = req.user;
+
+    if (user) {
+        return handleError(new Error("Vous êtes déjà connecté"), req, res, 'AuthController.register');
+    }
 
     try {
         const schemaData = vine.object({
@@ -64,6 +75,12 @@ const login: RequestHandler = async (req, res) => {
 }
 
 const generatePasswordResetToken: RequestHandler = async (req, res) => {
+
+    const user = req.user;
+
+    if (user) {
+        return handleError(new Error("Vous êtes déjà connecté"), req, res, 'AuthController.register');
+    }
 
     const schemaData = vine.object({
         email: vine.string().email()
@@ -86,6 +103,12 @@ const generatePasswordResetToken: RequestHandler = async (req, res) => {
 
 const checkUserRequest: RequestHandler = async (req, res) => {
 
+    const user = req.user;
+
+    if (user) {
+        return handleError(new Error("Vous êtes déjà connecté"), req, res, 'AuthController.register');
+    }
+
     const schemaData = vine.object({
         userId: vine.string().uuid(),
         token: vine.string()
@@ -105,6 +128,12 @@ const checkUserRequest: RequestHandler = async (req, res) => {
 }
 
 const changePassword: RequestHandler = async (req, res) => {
+
+    const user = req.user;
+
+    if (user) {
+        return handleError(new Error("Vous êtes déjà connecté"), req, res, 'AuthController.register');
+    }
     const schemaData = vine.object({
         userId: vine.string().uuid(),
         token: vine.string(),
