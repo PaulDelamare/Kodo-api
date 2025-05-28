@@ -8,6 +8,6 @@ export const checkFileExists: RequestHandler = (req, res, next) => {
      if (fs.existsSync(filePath)) {
           next();
      } else {
-          res.redirect("https://posware.fr/404");
+          res.redirect("https://kodo.evift.fr/404");
      }
 }
