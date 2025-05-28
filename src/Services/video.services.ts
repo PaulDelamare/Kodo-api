@@ -79,37 +79,41 @@ const findAllVideosService = async (
 ) => {
      const skip = (page - 1) * pageSize;
 
-     // Construire la clause where
      const whereClause: any = {};
      if (categorie) {
           whereClause.categorie = categorie;
      }
 
-     const videos = await bdd.video.findMany({
-          where: whereClause,
-          include: {
-               user: {
-                    select: {
-                         id: true,
-                         name: true,
-                         email: true,
-                         firstname: true
+     let videos: Video[] = [];
+
+     try {
+          videos = await bdd.video.findMany({
+               where: whereClause,
+               include: {
+                    user: {
+                         select: {
+                              id: true,
+                              name: true,
+                              email: true,
+                              firstname: true
+                         }
+                    },
+                    _count: {
+                         select: {
+                              views: true,
+                         }
                     }
                },
-               _count: {
-                    select: {
-                         views: true,
-                    }
-               }
-          },
-          orderBy: { createdAt: 'desc' },
-          skip,
-          take: pageSize
-     });
-
-     if (videos.length === 0) {
-          return throwError(404, 'Vidéos non trouvées');
+               orderBy: { createdAt: 'desc' },
+               skip,
+               take: pageSize
+          });
      }
+     catch (error) {
+
+          console.error("Erreur lors de la récupération des vidéos :", error);
+     }
+
 
      return videos;
 };
