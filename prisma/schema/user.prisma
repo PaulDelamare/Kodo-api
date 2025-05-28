@@ -15,4 +15,5 @@ model User {
     following Follow[] @relation("UserFollowedBy")
     savedVideos SavedVideo[]
     views       View[]
+    passwordResetToken PasswordResetToken[]
 }
